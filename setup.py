@@ -22,7 +22,7 @@ from os import path
 # Version of pymad (major,minor):
 PYMADVERSION=['0','4']
 
-# With Python 2.6, the cythoning does not work with setuptools:
+# With Python 2.6/SLC6, the cythoning does not work with setuptools:
 if sys.version_info < (2,7):
     from distutils.core import setup
     from distutils.extension import Extension
@@ -45,6 +45,7 @@ for arg in list(sys.argv):  # avoid problems due to side-effects by copying sys.
 def add_dir(dirlist, directory):
     if path.isdir(directory) and directory not in dirlist:
         dirlist.append(directory)
+
 
 # guess prefixes for possible header/library locations
 if special_madxdir:
@@ -97,7 +98,7 @@ cython_args = dict(
     library_dirs=libdirs,
     runtime_library_dirs=rlibdirs)
 
-setup(
+setup_args=dict(
     name='cern-pymad',
     version='.'.join(map(str, PYMADVERSION)),
     description='Interface to Mad-X, using Cython or Py4J through JMAD',
@@ -127,8 +128,22 @@ setup(
         "cern.pymad.tools",
         "cern.pymad.domain"
     ],
-    include_package_data=True, # include files matched by MANIFEST.in
     author='PyMAD developers',
     author_email='pymad@cern.ch',
-    license = 'CERN Standard Copyright License')
+    license = 'CERN Standard Copyright License',
+    )
 
+# For Python 2.6/SLC6, this is still needed (sorry):
+if sys.version_info < (2,7):
+    # list of data files to include..
+    cdata=['_models/*.json']
+    
+    # add this to include data array
+    for j in range(2,10):
+        for end in ['.madx','.str','.seq','.tfs', '.xsifx', 'CLICx' ,'.ind92']:
+            cdata.append('_models/re*data'+'/*'*j+end)
+    setup_args['package_data']={'cern.cpymad': cdata}
+else: # much simpler (but not available with distutils)
+    setup_args['include_package_data']=True
+
+setup(**setup_args)
