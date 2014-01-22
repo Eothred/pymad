@@ -32,7 +32,7 @@ install:
   # Install package (from the source distribution in order to test its
   # validity as well):
   - python setup.py sdist
-  - pip install $(ls ./dist/*.tar.gz | sort -rV | head -n1)
+  - pip install --verbose $(ls ./dist/*.tar.gz | sort -rV | head -n1)
 
 # Actual tests:
 script:
