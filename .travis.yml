@@ -36,5 +36,7 @@ install:
 
 # Actual tests:
 script:
+  - env
+  - export PYTHONPATH
   - ctest -LE SLOW -VV
 
